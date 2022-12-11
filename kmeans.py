@@ -1,3 +1,5 @@
+# CSMODEL S13 - Group 11: Philipe Chan, Gio Gerardino, Jaira Santos
+
 import numpy as np
 import pandas as pd
 
@@ -50,8 +52,6 @@ class KMeans(object):
             centroids.
         """
 
-        # TODO: Complete this function.
-
         # Step 1: Randomly select a data point from the dataset as the first
         # centroid.
         index = np.random.randint(low=0, high=self.num_observations)
@@ -70,11 +70,6 @@ class KMeans(object):
             # centroid 0.
             distances = pd.DataFrame()
 
-            # TODO: Get the Euclidean distance of each data point in the
-            # dataset from each centroid in the current set of centroids.
-            # Then store it to a column in the DataFrame distances
-            # Hint: Use the get_euclidean_distance() function that we have
-            # defined in this class.
             for j in range(len(self.centroids)):
                 distance = self.get_euclidean_distance(sliced_data, self.centroids.iloc[j])
                 distances = pd.concat([distances, distance], axis=1)
@@ -82,11 +77,7 @@ class KMeans(object):
             # Step 3: Select the data point with the maximum distance from the
             # nearest centroid as the next centroid.
 
-            # TODO: Get the minimum distance of each data point from centroid.
-            # Then, get the index of the data point with the maximum distance
-            # from the nearest centroid and store it to variable index.
-            # Hint: Use pandas.DataFrame.min() and pandas.Series.idxmax()
-            # functions.
+            
             closest = distances.min(axis=1)
             index = closest.idxmax()
 
@@ -124,8 +115,6 @@ class KMeans(object):
             between the data points.
         """
 
-        # TODO: Implement this function based on the documentation.
-        # Hint: Use the pandas.Series.sum() and the numpy.sqrt() functions.
         diff = point1 - point2
         squared = diff ** 2
 
@@ -149,26 +138,14 @@ class KMeans(object):
         Returns:
             Series -- represents the cluster of each data point in the dataset.
         """
-        # TODO: Complete this function.
-
-        # The variable distance is a DataFrame that will store the distances
-        # of each data point from each centroid. Each column represents the
-        # distance of the data point from a specific centroid. Example, the
-        # value in row 3 column 0 of the DataFrame distances represents the
-        # distance of data point 3 from centroid 0.
+        
         distances = pd.DataFrame()
         sliced_data = data.iloc[:, self.start_var:self.end_var]
         for i in range(self.k):
-            # TODO: Get the Euclidean distance of the data from each centroid
-            # then store it to a column in the DataFrame distances
-            # Hint: Use the get_euclidean_distance() function that we have
-            # defined in this class.
             distance = self.get_euclidean_distance(sliced_data, self.centroids.iloc[i])
             distances[str(i)] = distance
 
-        # TODO: get the index of the lowest distance for each data point and
-        # assign it to a Series named groups
-        # Hint: Use pandas.DataFrame.idxmin() function.
+        
         groups = distances.idxmin(axis=1)
 
         return groups.astype('int32')
@@ -187,14 +164,8 @@ class KMeans(object):
             centroids.
         """
 
-        # TODO: Complete this function.
-
         grouped_data = pd.concat([data, groups.rename('group')], axis=1)
 
-        # TODO: Group the data points together using the group column, then
-        # get their mean and store to variable centroids.
-        # Hint: use pandas.DataFrame.groupby and
-        # pandas.core.groupby.GroupBy.mean functions.
         grouped_data = grouped_data.groupby('group', as_index=False).mean()
         centroids = grouped_data.iloc[:, self.start_var+1:self.end_var+1]
 
@@ -217,8 +188,6 @@ class KMeans(object):
             dataset.
         """
 
-        # TODO: Complete this function.
-
         cur_groups = pd.Series(-1, index=[i for i in range(self.num_observations)])
         i = 0
         flag_groups = False
@@ -227,25 +196,15 @@ class KMeans(object):
         # While no stopping criterion has been met, do the following
         while i < iters and not flag_groups and not flag_centroids:
 
-            # TODO: Get the clusters of the data points in the dataset and
-            # store it in variable groups.
-            # Hint: Use the group_observation() function that we have defined
-            # in this class.
+           
             groups = self.group_observations(data)
 
-            # TODO: Adjust the centroids based on the current clusters and
-            # store it in variable centroids.
-            # Hint: Use the adjust_centroids() function that we have defined
-            # in this class.
             centroids = self.adjust_centroids(data, groups)
 
-            # TODO: Check if there are changes with the clustering of the
-            # data points.
             diff_groups = pd.Series(np.where(groups != cur_groups, 1, 0)).sum()
 
             flag_groups = (diff_groups == 0)
 
-            # TODO: Check if there are changes with the values of the centroids
             diff_centroids = (self.centroids - centroids)
             flag_centroids = (diff_centroids == 0).all(axis=None)
 
